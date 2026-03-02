@@ -1,50 +1,134 @@
-# Welcome to your Expo app 👋
+# Local Marketplace App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A React Native marketplace app built with Expo and Appwrite backend where users can buy and sell used products locally.
 
-## Get started
+## Features
 
-1. Install dependencies
+- 📱 Browse products with search and category filters
+- 📸 Post listings with multiple images (camera or gallery)
+- 💬 Contact sellers via Call or WhatsApp
+- 🏷️ Mark items as sold with edit codes
+- 🔄 Pull to refresh
+- 📍 Location-based listings
+- 🎨 Clean, modern UI with NativeWind (Tailwind CSS)
 
-   ```bash
-   npm install
-   ```
+## Tech Stack
 
-2. Start the app
+- React Native (Expo)
+- Appwrite (Backend)
+- NativeWind (Styling)
+- Expo Router (Navigation)
+- TypeScript
 
-   ```bash
-   npx expo start
-   ```
+## Quick Start
 
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+### 1. Install Dependencies
 
 ```bash
-npm run reset-project
+npm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### 2. Setup Appwrite (Automated)
 
-## Learn more
+The setup script will automatically create:
 
-To learn more about developing your project with Expo, look at the following resources:
+- Database
+- Products collection with all attributes and indexes
+- Storage bucket for images
+- Update .env.local with generated IDs
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```bash
+npm run setup
+```
 
-## Join the community
+### 3. Run the App
 
-Join our community of developers creating universal apps.
+```bash
+# Android
+npm run android
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+# iOS
+npm run ios
+
+# Web
+npm run web
+```
+
+## Project Structure
+
+```
+├── app/
+│   ├── (tabs)/
+│   │   ├── index.tsx      # Browse listings
+│   │   ├── post.tsx       # Create listing
+│   │   └── _layout.tsx    # Tab navigation
+│   ├── product/[id].tsx   # Product details
+│   └── _layout.tsx        # Root layout
+├── lib/
+│   ├── appwrite.ts        # Appwrite config
+│   ├── api.ts             # API functions
+│   ├── types.ts           # TypeScript types
+│   └── utils.ts           # Utility functions
+└── scripts/
+    └── setup-appwrite.js  # Automated setup script
+```
+
+## Environment Variables
+
+The `.env.local` file contains:
+
+```env
+EXPO_PUBLIC_APPWRITE_ENDPOINT=your-endpoint
+APPWRITE_PROJECT_ID=your-project-id
+APPWRITE_API_KEY=your-api-key
+EXPO_PUBLIC_APPWRITE_DATABASE_ID=auto-generated
+EXPO_PUBLIC_APPWRITE_COLLECTION_ID=auto-generated
+EXPO_PUBLIC_APPWRITE_BUCKET_ID=auto-generated
+```
+
+## How It Works
+
+### No Authentication (MVP)
+
+- Users can browse and post without signing up
+- Each listing gets a unique edit code
+- Sellers use the edit code to mark items as sold
+- Edit codes are stored locally and in the database
+
+### Posting a Product
+
+1. Take photos or select from gallery (up to 5 images)
+2. Fill in product details (title, price, condition, etc.)
+3. Add your contact info (name, phone, location)
+4. Get a unique edit code to manage your listing
+
+### Contacting Sellers
+
+- Call button opens phone dialer
+- WhatsApp button opens WhatsApp with pre-filled message
+- Payment handled outside the app
+
+## Future Enhancements
+
+Once you reach 100 users:
+
+- ✨ User authentication
+- 👤 User profiles
+- ⭐ Ratings and reviews
+- 💬 In-app messaging
+- 📍 Location-based filtering
+- 🔔 Push notifications
+- ❤️ Favorites/Wishlist
+
+## Scripts
+
+- `npm start` - Start Expo dev server
+- `npm run android` - Run on Android
+- `npm run ios` - Run on iOS
+- `npm run web` - Run on web
+- `npm run setup` - Setup Appwrite (one-time)
+- `npm run lint` - Run ESLint
+
+## License
+
+MIT
