@@ -1,5 +1,7 @@
 import { Buffer } from "buffer";
 import { Client, ID, Storage } from "node-appwrite";
+import { InputFile } from "node-appwrite/file"
+
 
 export default async ({ req, res, log, error }) => {
   const client = new Client()
@@ -27,17 +29,19 @@ export default async ({ req, res, log, error }) => {
     log(`Processing ${images.length} images`);
 
     const uploadPromises = images.map(async (imageData) => {
-      // imageData should be base64 string
+      // Convert base64 to buffer
       const buffer = Buffer.from(imageData.data, "base64");
       const filename = imageData.filename || `image-${Date.now()}.jpg`;
 
       log(`Uploading ${filename}`);
 
+      // Use InputFile.fromBuffer instead of raw buffer
+      const inputFile = InputFile.fromBuffer(buffer, filename);
+
       const file = await storage.createFile(
         process.env.EXPO_PUBLIC_APPWRITE_BUCKET_ID,
         ID.unique(),
-        buffer,
-        filename,
+        inputFile,
       );
 
       return file.$id;
