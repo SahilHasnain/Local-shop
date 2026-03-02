@@ -15,7 +15,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function MyListingsScreen() {
   const router = useRouter();
@@ -121,15 +120,21 @@ export default function MyListingsScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 justify-center items-center bg-gray-50">
+      <View
+        className="flex-1 justify-center items-center bg-gray-50"
+        style={{ paddingTop: 50 }}
+      >
         <ActivityIndicator size="large" color="#3b82f6" />
-      </SafeAreaView>
+      </View>
     );
   }
 
   if (!isAuthenticated) {
     return (
-      <SafeAreaView className="flex-1 justify-center items-center bg-gray-50 px-8">
+      <View
+        className="flex-1 justify-center items-center bg-gray-50 px-8"
+        style={{ paddingTop: 50 }}
+      >
         <Ionicons name="person-outline" size={64} color="#d1d5db" />
         <Text className="text-gray-400 mt-4 text-base text-center">
           Post your first item to see your listings here
@@ -140,17 +145,17 @@ export default function MyListingsScreen() {
         >
           <Text className="text-white font-semibold">Start Selling</Text>
         </TouchableOpacity>
-      </SafeAreaView>
+      </View>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
+    <View className="flex-1 bg-gray-50">
       <FlatList
         data={products}
         renderItem={renderProduct}
         keyExtractor={(item) => item.$id}
-        contentContainerStyle={{ paddingTop: 16, paddingBottom: 20 }}
+        contentContainerStyle={{ paddingTop: 66, paddingBottom: 100 }}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
@@ -171,6 +176,6 @@ export default function MyListingsScreen() {
           </View>
         }
       />
-    </SafeAreaView>
+    </View>
   );
 }

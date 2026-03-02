@@ -14,7 +14,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function BrowseScreen() {
   const router = useRouter();
@@ -82,14 +81,17 @@ export default function BrowseScreen() {
 
   if (loading && !refreshing) {
     return (
-      <SafeAreaView className="flex-1 justify-center items-center bg-gray-50">
+      <View
+        className="flex-1 justify-center items-center bg-gray-50"
+        style={{ paddingTop: 50 }}
+      >
         <ActivityIndicator size="large" color="#3b82f6" />
-      </SafeAreaView>
+      </View>
     );
   }
 
-  return (
-    <SafeAreaView className="flex-1 bg-gray-50">
+  const renderHeader = () => (
+    <View>
       {/* Search Bar */}
       <View className="bg-white p-4 shadow-sm">
         <View className="flex-row items-center bg-gray-100 rounded-lg px-3 py-2">
@@ -106,7 +108,7 @@ export default function BrowseScreen() {
       </View>
 
       {/* Category Filter */}
-      <View className="bg-white px-4 py-2 border-b border-gray-200">
+      <View className="bg-white px-4 py-2 border-b border-gray-200 mb-4">
         <FlatList
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -132,8 +134,11 @@ export default function BrowseScreen() {
           )}
         />
       </View>
+    </View>
+  );
 
-      {/* Products Grid */}
+  return (
+    <View className="flex-1 bg-gray-50">
       <FlatList
         data={products}
         renderItem={renderProduct}
@@ -143,10 +148,11 @@ export default function BrowseScreen() {
           justifyContent: "space-between",
           paddingHorizontal: 16,
         }}
-        contentContainerStyle={{ paddingTop: 16, paddingBottom: 20 }}
+        contentContainerStyle={{ paddingTop: 50, paddingBottom: 100 }}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
+        ListHeaderComponent={renderHeader}
         ListEmptyComponent={
           <View className="flex-1 justify-center items-center py-20">
             <Ionicons name="cube-outline" size={64} color="#d1d5db" />
@@ -156,6 +162,6 @@ export default function BrowseScreen() {
           </View>
         }
       />
-    </SafeAreaView>
+    </View>
   );
 }
