@@ -1,4 +1,4 @@
-import { appwriteConfig, databases, functions, Query } from "./appwrite";
+import { appwriteConfig, databases, Query } from "./appwrite";
 import { Product } from "./types";
 
 export const api = {
@@ -56,12 +56,23 @@ export const api = {
       }),
     );
 
-    const response = await functions.createExecution(
-      "upload-images", // Function ID - you'll need to create this
-      JSON.stringify({ images: imageData }),
+    const response = await fetch(
+      "https://69a577a80022af92e06f.sgp.appwrite.run",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Appwrite-Project": process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID!,
+        },
+        body: JSON.stringify({ images: imageData }),
+      },
     );
 
-    const result = JSON.parse(response.responseBody);
+    if (!response.ok) {
+      throw new Error(`Function call failed: ${response.status}`);
+    }
+
+    const result = await response.json();
     if (!result.success) {
       throw new Error(result.error);
     }

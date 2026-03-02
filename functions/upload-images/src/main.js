@@ -10,16 +10,28 @@ export default async ({ req, res, log, error }) => {
   const storage = new Storage(client);
 
   try {
-    const { images } = JSON.parse(req.body);
+    // Handle both string and object body
+    let body;
+    if (typeof req.body === "string") {
+      body = JSON.parse(req.body);
+    } else {
+      body = req.body;
+    }
+
+    const { images } = body;
 
     if (!images || !Array.isArray(images)) {
       return res.json({ error: "Images array is required" }, 400);
     }
 
+    log(`Processing ${images.length} images`);
+
     const uploadPromises = images.map(async (imageData) => {
       // imageData should be base64 string
       const buffer = Buffer.from(imageData.data, "base64");
       const filename = imageData.filename || `image-${Date.now()}.jpg`;
+
+      log(`Uploading ${filename}`);
 
       const file = await storage.createFile(
         process.env.EXPO_PUBLIC_APPWRITE_BUCKET_ID,
@@ -32,6 +44,8 @@ export default async ({ req, res, log, error }) => {
     });
 
     const fileIds = await Promise.all(uploadPromises);
+
+    log(`Successfully uploaded ${fileIds.length} files`);
 
     return res.json({
       success: true,
