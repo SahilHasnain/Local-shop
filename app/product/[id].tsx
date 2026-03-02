@@ -16,6 +16,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const { width } = Dimensions.get("window");
 
@@ -85,22 +86,22 @@ export default function ProductDetailScreen() {
 
   if (loading) {
     return (
-      <View className="flex-1 justify-center items-center">
+      <SafeAreaView className="flex-1 justify-center items-center">
         <ActivityIndicator size="large" color="#3b82f6" />
-      </View>
+      </SafeAreaView>
     );
   }
 
   if (!product) {
     return (
-      <View className="flex-1 justify-center items-center">
+      <SafeAreaView className="flex-1 justify-center items-center">
         <Text className="text-gray-500">Product not found</Text>
-      </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <View className="flex-1 bg-white">
+    <SafeAreaView className="flex-1 bg-white">
       <ScrollView>
         {/* Image Carousel */}
         <View>
@@ -269,6 +270,6 @@ export default function ProductDetailScreen() {
           </TouchableOpacity>
         </View>
       )}
-    </View>
+    </SafeAreaView>
   );
 }

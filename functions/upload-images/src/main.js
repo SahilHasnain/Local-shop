@@ -1,7 +1,6 @@
 import { Buffer } from "buffer";
 import { Client, ID, Storage } from "node-appwrite";
-import { InputFile } from "node-appwrite/file"
-
+import { InputFile } from "node-appwrite/file";
 
 export default async ({ req, res, log, error }) => {
   const client = new Client()

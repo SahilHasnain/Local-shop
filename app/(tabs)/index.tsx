@@ -14,6 +14,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function BrowseScreen() {
   const router = useRouter();
@@ -81,14 +82,14 @@ export default function BrowseScreen() {
 
   if (loading && !refreshing) {
     return (
-      <View className="flex-1 justify-center items-center bg-gray-50">
+      <SafeAreaView className="flex-1 justify-center items-center bg-gray-50">
         <ActivityIndicator size="large" color="#3b82f6" />
-      </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <View className="flex-1 bg-gray-50">
+    <SafeAreaView className="flex-1 bg-gray-50">
       {/* Search Bar */}
       <View className="bg-white p-4 shadow-sm">
         <View className="flex-row items-center bg-gray-100 rounded-lg px-3 py-2">
@@ -155,6 +156,6 @@ export default function BrowseScreen() {
           </View>
         }
       />
-    </View>
+    </SafeAreaView>
   );
 }

@@ -7,14 +7,24 @@ export function generateEditCode(): string {
 
 // Store edit code locally
 export async function storeEditCode(productId: string, editCode: string) {
-  const key = `edit_code_${productId}`;
-  await AsyncStorage.setItem(key, editCode);
+  try {
+    const key = `edit_code_${productId}`;
+    await AsyncStorage.setItem(key, editCode);
+  } catch (error) {
+    console.warn("Failed to store edit code locally:", error);
+    // Continue without storing locally - not critical for functionality
+  }
 }
 
 // Get stored edit code
 export async function getEditCode(productId: string): Promise<string | null> {
-  const key = `edit_code_${productId}`;
-  return await AsyncStorage.getItem(key);
+  try {
+    const key = `edit_code_${productId}`;
+    return await AsyncStorage.getItem(key);
+  } catch (error) {
+    console.warn("Failed to get edit code from local storage:", error);
+    return null;
+  }
 }
 
 // Format price

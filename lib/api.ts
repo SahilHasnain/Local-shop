@@ -1,4 +1,4 @@
-import { appwriteConfig, databases, Query } from "./appwrite";
+import { appwriteConfig, databases, ID, Query } from "./appwrite";
 import { Product } from "./types";
 
 export const api = {
@@ -82,6 +82,12 @@ export const api = {
 
   // Create product (DIRECT - fast)
   async createProduct(data: Omit<Product, "$id" | "$createdAt">) {
+    const response = await databases.createDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.productsCollectionId,
+      ID.unique(),
+      data,
+    );
     return response as unknown as Product;
   },
 
