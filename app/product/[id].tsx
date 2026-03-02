@@ -3,7 +3,7 @@ import { Product } from "@/lib/types";
 import { formatDate, formatPrice, getEditCode } from "@/lib/utils";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -16,7 +16,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 const { width } = Dimensions.get("window");
 
@@ -30,12 +29,7 @@ export default function ProductDetailScreen() {
   const [editCode, setEditCode] = useState("");
   const [hasEditCode, setHasEditCode] = useState(false);
 
-  useEffect(() => {
-    loadProduct();
-    checkEditCode();
-  }, [id]);
-
-  const loadProduct = async () => {
+  const loadProduct = useCallback(async () => {
     try {
       const data = await api.getProduct(id);
       setProduct(data);
@@ -45,13 +39,18 @@ export default function ProductDetailScreen() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
 
-  const checkEditCode = async () => {
+  const checkEditCode = useCallback(async () => {
     const code = await getEditCode(id);
     setHasEditCode(!!code);
     if (code) setEditCode(code);
-  };
+  }, [id]);
+
+  useEffect(() => {
+    loadProduct();
+    checkEditCode();
+  }, [loadProduct, checkEditCode]);
 
   const handleCall = () => {
     if (product) {
@@ -79,30 +78,36 @@ export default function ProductDetailScreen() {
       Alert.alert("Success", "Product marked as sold!", [
         { text: "OK", onPress: () => router.back() },
       ]);
-    } catch (error) {
+    } catch {
       Alert.alert("Error", "Invalid edit code or failed to update");
     }
   };
 
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 justify-center items-center">
+      <View
+        className="flex-1 justify-center items-center"
+        style={{ paddingTop: 50 }}
+      >
         <ActivityIndicator size="large" color="#3b82f6" />
-      </SafeAreaView>
+      </View>
     );
   }
 
   if (!product) {
     return (
-      <SafeAreaView className="flex-1 justify-center items-center">
+      <View
+        className="flex-1 justify-center items-center"
+        style={{ paddingTop: 50 }}
+      >
         <Text className="text-gray-500">Product not found</Text>
-      </SafeAreaView>
+      </View>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <ScrollView>
+    <View className="flex-1 bg-white">
+      <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
         {/* Image Carousel */}
         <View>
           <ScrollView
@@ -248,7 +253,10 @@ export default function ProductDetailScreen() {
 
       {/* Contact Buttons */}
       {product.status === "available" && (
-        <View className="p-4 border-t border-gray-200 flex-row gap-3">
+        <View
+          className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 flex-row gap-3 bg-white"
+          style={{ paddingBottom: 34 }}
+        >
           <TouchableOpacity
             className="flex-1 bg-blue-500 p-4 rounded-lg flex-row items-center justify-center"
             onPress={handleCall}
@@ -270,6 +278,6 @@ export default function ProductDetailScreen() {
           </TouchableOpacity>
         </View>
       )}
-    </SafeAreaView>
+    </View>
   );
 }
