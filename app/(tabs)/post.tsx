@@ -17,7 +17,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function PostScreen() {
   const router = useRouter();
@@ -150,13 +149,13 @@ export default function PostScreen() {
         console.warn("Could not store edit code locally:", error);
       }
 
-      // Show success with edit code
+      // Show success message
       Alert.alert(
         "Success!",
-        `Your product is now live!\n\nEdit Code: ${editCode}\n\nSave this code to mark your item as sold later.`,
+        "Your product is now live! You can manage it from the 'My Listings' tab.",
         [
           {
-            text: "OK",
+            text: "View My Listings",
             onPress: () => {
               // Reset form
               setImages([]);
@@ -169,8 +168,24 @@ export default function PostScreen() {
               setSellerPhone("");
               setLocation("");
 
-              // Navigate to browse
-              router.push("/(tabs)");
+              // Navigate to My Listings
+              router.push("/(tabs)/my-listings");
+            },
+          },
+          {
+            text: "Post Another",
+            style: "cancel",
+            onPress: () => {
+              // Reset form only
+              setImages([]);
+              setTitle("");
+              setDescription("");
+              setPrice("");
+              setCondition("good");
+              setCategory(CATEGORIES[0]);
+              setSellerName("");
+              setSellerPhone("");
+              setLocation("");
             },
           },
         ],
@@ -184,146 +199,148 @@ export default function PostScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
-      <ScrollView className="flex-1 bg-gray-50">
-        <View className="p-4">
-          {/* Images */}
-          <Text className="text-lg font-semibold mb-3">Photos</Text>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            className="mb-4"
-          >
-            {images.map((uri, index) => (
-              <View key={index} className="mr-3 relative">
-                <Image source={{ uri }} className="w-24 h-24 rounded-lg" />
-                <TouchableOpacity
-                  className="absolute -top-2 -right-2 bg-red-500 rounded-full p-1"
-                  onPress={() => removeImage(index)}
-                >
-                  <Ionicons name="close" size={16} color="white" />
-                </TouchableOpacity>
-              </View>
+    <ScrollView
+      className="flex-1 bg-gray-50"
+      contentContainerStyle={{ paddingTop: 50, paddingBottom: 100 }}
+      showsVerticalScrollIndicator={false}
+    >
+      <View className="p-4">
+        {/* Images */}
+        <Text className="text-lg font-semibold mb-3">Photos</Text>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          className="mb-4"
+        >
+          {images.map((uri, index) => (
+            <View key={index} className="mr-3 relative">
+              <Image source={{ uri }} className="w-24 h-24 rounded-lg" />
+              <TouchableOpacity
+                className="absolute -top-2 -right-2 bg-red-500 rounded-full p-1"
+                onPress={() => removeImage(index)}
+              >
+                <Ionicons name="close" size={16} color="white" />
+              </TouchableOpacity>
+            </View>
+          ))}
+
+          {images.length < 5 && (
+            <>
+              <TouchableOpacity
+                className="w-24 h-24 bg-gray-200 rounded-lg justify-center items-center mr-3"
+                onPress={takePhoto}
+              >
+                <Ionicons name="camera" size={32} color="#9ca3af" />
+                <Text className="text-xs text-gray-500 mt-1">Camera</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                className="w-24 h-24 bg-gray-200 rounded-lg justify-center items-center"
+                onPress={pickImage}
+              >
+                <Ionicons name="images" size={32} color="#9ca3af" />
+                <Text className="text-xs text-gray-500 mt-1">Gallery</Text>
+              </TouchableOpacity>
+            </>
+          )}
+        </ScrollView>
+
+        {/* Title */}
+        <Text className="text-base font-semibold mb-2">Title *</Text>
+        <TextInput
+          className="bg-white p-3 rounded-lg mb-4 text-base"
+          placeholder="e.g., iPhone 13 Pro Max"
+          value={title}
+          onChangeText={setTitle}
+        />
+
+        {/* Description */}
+        <Text className="text-base font-semibold mb-2">Description</Text>
+        <TextInput
+          className="bg-white p-3 rounded-lg mb-4 text-base"
+          placeholder="Describe your item..."
+          value={description}
+          onChangeText={setDescription}
+          multiline
+          numberOfLines={4}
+          textAlignVertical="top"
+        />
+
+        {/* Price */}
+        <Text className="text-base font-semibold mb-2">Price (₹) *</Text>
+        <TextInput
+          className="bg-white p-3 rounded-lg mb-4 text-base"
+          placeholder="e.g., 50000"
+          value={price}
+          onChangeText={setPrice}
+          keyboardType="numeric"
+        />
+
+        {/* Condition */}
+        <Text className="text-base font-semibold mb-2">Condition *</Text>
+        <View className="bg-white rounded-lg mb-4 overflow-hidden">
+          <Picker selectedValue={condition} onValueChange={setCondition}>
+            {CONDITIONS.map((c) => (
+              <Picker.Item key={c.value} label={c.label} value={c.value} />
             ))}
-
-            {images.length < 5 && (
-              <>
-                <TouchableOpacity
-                  className="w-24 h-24 bg-gray-200 rounded-lg justify-center items-center mr-3"
-                  onPress={takePhoto}
-                >
-                  <Ionicons name="camera" size={32} color="#9ca3af" />
-                  <Text className="text-xs text-gray-500 mt-1">Camera</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  className="w-24 h-24 bg-gray-200 rounded-lg justify-center items-center"
-                  onPress={pickImage}
-                >
-                  <Ionicons name="images" size={32} color="#9ca3af" />
-                  <Text className="text-xs text-gray-500 mt-1">Gallery</Text>
-                </TouchableOpacity>
-              </>
-            )}
-          </ScrollView>
-
-          {/* Title */}
-          <Text className="text-base font-semibold mb-2">Title *</Text>
-          <TextInput
-            className="bg-white p-3 rounded-lg mb-4 text-base"
-            placeholder="e.g., iPhone 13 Pro Max"
-            value={title}
-            onChangeText={setTitle}
-          />
-
-          {/* Description */}
-          <Text className="text-base font-semibold mb-2">Description</Text>
-          <TextInput
-            className="bg-white p-3 rounded-lg mb-4 text-base"
-            placeholder="Describe your item..."
-            value={description}
-            onChangeText={setDescription}
-            multiline
-            numberOfLines={4}
-            textAlignVertical="top"
-          />
-
-          {/* Price */}
-          <Text className="text-base font-semibold mb-2">Price (₹) *</Text>
-          <TextInput
-            className="bg-white p-3 rounded-lg mb-4 text-base"
-            placeholder="e.g., 50000"
-            value={price}
-            onChangeText={setPrice}
-            keyboardType="numeric"
-          />
-
-          {/* Condition */}
-          <Text className="text-base font-semibold mb-2">Condition *</Text>
-          <View className="bg-white rounded-lg mb-4 overflow-hidden">
-            <Picker selectedValue={condition} onValueChange={setCondition}>
-              {CONDITIONS.map((c) => (
-                <Picker.Item key={c.value} label={c.label} value={c.value} />
-              ))}
-            </Picker>
-          </View>
-
-          {/* Category */}
-          <Text className="text-base font-semibold mb-2">Category *</Text>
-          <View className="bg-white rounded-lg mb-4 overflow-hidden">
-            <Picker selectedValue={category} onValueChange={setCategory}>
-              {CATEGORIES.map((cat) => (
-                <Picker.Item key={cat} label={cat} value={cat} />
-              ))}
-            </Picker>
-          </View>
-
-          {/* Seller Info */}
-          <Text className="text-lg font-semibold mb-3 mt-2">
-            Your Contact Info
-          </Text>
-
-          <Text className="text-base font-semibold mb-2">Name *</Text>
-          <TextInput
-            className="bg-white p-3 rounded-lg mb-4 text-base"
-            placeholder="Your name"
-            value={sellerName}
-            onChangeText={setSellerName}
-          />
-
-          <Text className="text-base font-semibold mb-2">Phone Number *</Text>
-          <TextInput
-            className="bg-white p-3 rounded-lg mb-4 text-base"
-            placeholder="e.g., 9876543210"
-            value={sellerPhone}
-            onChangeText={setSellerPhone}
-            keyboardType="phone-pad"
-          />
-
-          <Text className="text-base font-semibold mb-2">Location *</Text>
-          <TextInput
-            className="bg-white p-3 rounded-lg mb-6 text-base"
-            placeholder="e.g., Gandey, Giridih"
-            value={location}
-            onChangeText={setLocation}
-          />
-
-          {/* Submit Button */}
-          <TouchableOpacity
-            className={`p-4 rounded-lg items-center ${loading ? "bg-gray-400" : "bg-blue-500"}`}
-            onPress={handleSubmit}
-            disabled={loading}
-          >
-            {loading ? (
-              <ActivityIndicator color="white" />
-            ) : (
-              <Text className="text-white font-semibold text-lg">
-                Post Listing
-              </Text>
-            )}
-          </TouchableOpacity>
+          </Picker>
         </View>
-      </ScrollView>
-    </SafeAreaView>
+
+        {/* Category */}
+        <Text className="text-base font-semibold mb-2">Category *</Text>
+        <View className="bg-white rounded-lg mb-4 overflow-hidden">
+          <Picker selectedValue={category} onValueChange={setCategory}>
+            {CATEGORIES.map((cat) => (
+              <Picker.Item key={cat} label={cat} value={cat} />
+            ))}
+          </Picker>
+        </View>
+
+        {/* Seller Info */}
+        <Text className="text-lg font-semibold mb-3 mt-2">
+          Your Contact Info
+        </Text>
+
+        <Text className="text-base font-semibold mb-2">Name *</Text>
+        <TextInput
+          className="bg-white p-3 rounded-lg mb-4 text-base"
+          placeholder="Your name"
+          value={sellerName}
+          onChangeText={setSellerName}
+        />
+
+        <Text className="text-base font-semibold mb-2">Phone Number *</Text>
+        <TextInput
+          className="bg-white p-3 rounded-lg mb-4 text-base"
+          placeholder="e.g., 9876543210"
+          value={sellerPhone}
+          onChangeText={setSellerPhone}
+          keyboardType="phone-pad"
+        />
+
+        <Text className="text-base font-semibold mb-2">Location *</Text>
+        <TextInput
+          className="bg-white p-3 rounded-lg mb-6 text-base"
+          placeholder="e.g., Gandey, Giridih"
+          value={location}
+          onChangeText={setLocation}
+        />
+
+        {/* Submit Button */}
+        <TouchableOpacity
+          className={`p-4 rounded-lg items-center ${loading ? "bg-gray-400" : "bg-blue-500"}`}
+          onPress={handleSubmit}
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator color="white" />
+          ) : (
+            <Text className="text-white font-semibold text-lg">
+              Post Listing
+            </Text>
+          )}
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
   );
 }
