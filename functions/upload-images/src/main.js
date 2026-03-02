@@ -1,9 +1,10 @@
+import { Buffer } from "buffer";
 import { Client, ID, Storage } from "node-appwrite";
 
 export default async ({ req, res, log, error }) => {
   const client = new Client()
-    .setEndpoint(process.env.APPWRITE_FUNCTION_ENDPOINT)
-    .setProject(process.env.APPWRITE_FUNCTION_PROJECT_ID)
+    .setEndpoint(process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT)
+    .setProject(process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID)
     .setKey(process.env.APPWRITE_API_KEY);
 
   const storage = new Storage(client);
@@ -21,7 +22,7 @@ export default async ({ req, res, log, error }) => {
       const filename = imageData.filename || `image-${Date.now()}.jpg`;
 
       const file = await storage.createFile(
-        process.env.STORAGE_BUCKET_ID,
+        process.env.EXPO_PUBLIC_APPWRITE_BUCKET_ID,
         ID.unique(),
         buffer,
         filename,
