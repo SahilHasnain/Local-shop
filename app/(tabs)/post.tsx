@@ -106,9 +106,7 @@ export default function PostScreen() {
 
     try {
       // Upload images
-      const imageIds = await Promise.all(
-        images.map((uri) => api.uploadImage(uri)),
-      );
+      const imageIds = await api.uploadImages(images);
 
       // Generate edit code
       const editCode = generateEditCode();
@@ -283,7 +281,7 @@ export default function PostScreen() {
         <Text className="text-base font-semibold mb-2">Location *</Text>
         <TextInput
           className="bg-white p-3 rounded-lg mb-6 text-base"
-          placeholder="e.g., Mumbai, Maharashtra"
+          placeholder="e.g., Gandey, Giridih"
           value={location}
           onChangeText={setLocation}
         />

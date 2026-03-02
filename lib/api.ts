@@ -1,8 +1,8 @@
-import { appwriteConfig, databases, ID, Query, storage } from "./appwrite";
+import { appwriteConfig, databases, functions, Query } from "./appwrite";
 import { Product } from "./types";
 
 export const api = {
-  // Fetch all products
+  // Fetch all products (DIRECT - fastest)
   async getProducts(category?: string, searchQuery?: string) {
     const queries = [
       Query.equal("status", "available"),
@@ -26,7 +26,7 @@ export const api = {
     return response.documents as unknown as Product[];
   },
 
-  // Get single product
+  // Get single product (DIRECT - fastest)
   async getProduct(id: string) {
     const response = await databases.getDocument(
       appwriteConfig.databaseId,
@@ -36,43 +36,52 @@ export const api = {
     return response as unknown as Product;
   },
 
-  // Create product
-  async createProduct(data: Omit<Product, "$id" | "$createdAt">) {
-    const response = await databases.createDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.productsCollectionId,
-      ID.unique(),
-      data,
+  // Upload images via function (FUNCTION - reliable)
+  async uploadImages(imageUris: string[]) {
+    const imageData = await Promise.all(
+      imageUris.map(async (uri) => {
+        const response = await fetch(uri);
+        const blob = await response.blob();
+        const base64 = await new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            const base64String = (reader.result as string).split(",")[1];
+            resolve(base64String);
+          };
+          reader.readAsDataURL(blob);
+        });
+
+        const filename = uri.split("/").pop() || `image-${Date.now()}.jpg`;
+        return { data: base64, filename };
+      }),
     );
+
+    const response = await functions.createExecution(
+      "upload-images", // Function ID - you'll need to create this
+      JSON.stringify({ images: imageData }),
+    );
+
+    const result = JSON.parse(response.responseBody);
+    if (!result.success) {
+      throw new Error(result.error);
+    }
+
+    return result.fileIds;
+  },
+
+  // Create product (DIRECT - fast)
+  async createProduct(data: Omit<Product, "$id" | "$createdAt">) {
     return response as unknown as Product;
   },
 
-  // Upload image
-  async uploadImage(uri: string) {
-    const response = await fetch(uri);
-    const blob = await response.blob();
-
-    // Convert Blob to File for web SDK
-    const filename = uri.split("/").pop() || "image.jpg";
-    const file = new File([blob], filename, {
-      type: blob.type || "image/jpeg",
-    });
-
-    const uploadedFile = await storage.createFile(
-      appwriteConfig.storageBucketId,
-      ID.unique(),
-      file,
-    );
-
-    return uploadedFile.$id;
-  },
-
-  // Get image URL
+  // Get image URL (DIRECT)
   getImageUrl(fileId: string) {
-    return `${storage.client.config.endpoint}/storage/buckets/${appwriteConfig.storageBucketId}/files/${fileId}/view?project=${storage.client.config.project}`;
+    const endpoint = process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT;
+    const projectId = process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID;
+    return `${endpoint}/storage/buckets/${appwriteConfig.storageBucketId}/files/${fileId}/view?project=${projectId}`;
   },
 
-  // Mark as sold
+  // Mark as sold (DIRECT - fast)
   async markAsSold(productId: string, editCode: string) {
     const product = await this.getProduct(productId);
 

@@ -10,7 +10,8 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "setup": "node scripts/setup-appwrite.js",
-    "register-platform": "node scripts/register-platform.js"
+    "register-platform": "node scripts/register-platform.js",
+    "deploy-function": "node scripts/deploy-function.js"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",

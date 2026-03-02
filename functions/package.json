@@ -1,0 +1,12 @@
+{
+  "name": "appwrite-functions",
+  "version": "1.0.0",
+  "description": "Shared package.json for all Appwrite functions",
+  "type": "module",
+  "scripts": {
+    "build": "echo 'No build script needed'"
+  },
+  "dependencies": {
+    "node-appwrite": "^21.0.1"
+  }
+}
