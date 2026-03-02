@@ -1,4 +1,4 @@
-import { Client, Databases, Functions, ID, Query, Storage } from "appwrite";
+import { Account, Client, Databases, Functions, ID, Query, Storage } from "appwrite";
 
 const APPWRITE_ENDPOINT = process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT!;
 const APPWRITE_PROJECT_ID = process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID!;
@@ -22,6 +22,7 @@ const client = new Client()
 export const databases = new Databases(client);
 export const storage = new Storage(client);
 export const functions = new Functions(client);
+export const account = new Account(client);
 
 export const appwriteConfig = {
   databaseId: DATABASE_ID,

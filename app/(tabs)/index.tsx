@@ -3,7 +3,7 @@ import { CATEGORIES, Product } from "@/lib/types";
 import { formatDate, formatPrice } from "@/lib/utils";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -24,7 +24,7 @@ export default function BrowseScreen() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
 
-  const loadProducts = async () => {
+  const loadProducts = useCallback(async () => {
     try {
       const data = await api.getProducts(
         selectedCategory === "All" ? undefined : selectedCategory,
@@ -37,11 +37,11 @@ export default function BrowseScreen() {
       setLoading(false);
       setRefreshing(false);
     }
-  };
+  }, [selectedCategory, searchQuery]);
 
   useEffect(() => {
     loadProducts();
-  }, [selectedCategory]);
+  }, [loadProducts]);
 
   const handleSearch = () => {
     setLoading(true);

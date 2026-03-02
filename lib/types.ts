@@ -14,6 +14,7 @@ export interface Product {
   location: string;
   status: ProductStatus;
   edit_code: string;
+  user_id?: string; // Optional for backward compatibility
   $createdAt: string;
   reported?: boolean;
 }

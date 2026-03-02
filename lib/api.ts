@@ -1,4 +1,5 @@
 import { appwriteConfig, databases, ID, Query } from "./appwrite";
+import { auth } from "./auth";
 import { Product } from "./types";
 
 export const api = {
@@ -82,13 +83,43 @@ export const api = {
 
   // Create product (DIRECT - fast)
   async createProduct(data: Omit<Product, "$id" | "$createdAt">) {
+    // Add user ID if authenticated
+    let productData = { ...data };
+    try {
+      const user = await auth.getCurrentUser();
+      if (user) {
+        productData = { ...data, user_id: user.$id };
+      }
+    } catch (error) {
+      console.warn("Could not get current user:", error);
+    }
+
     const response = await databases.createDocument(
       appwriteConfig.databaseId,
       appwriteConfig.productsCollectionId,
       ID.unique(),
-      data,
+      productData,
     );
     return response as unknown as Product;
+  },
+
+  // Get user's products (authenticated users only)
+  async getUserProducts(): Promise<Product[]> {
+    try {
+      const user = await auth.getCurrentUser();
+      if (!user) return [];
+
+      const response = await databases.listDocuments(
+        appwriteConfig.databaseId,
+        appwriteConfig.productsCollectionId,
+        [Query.equal("user_id", user.$id), Query.orderDesc("$createdAt")],
+      );
+
+      return response.documents as unknown as Product[];
+    } catch (error) {
+      console.error("Error fetching user products:", error);
+      return [];
+    }
   },
 
   // Get image URL (DIRECT)

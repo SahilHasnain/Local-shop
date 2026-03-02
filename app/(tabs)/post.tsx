@@ -1,4 +1,5 @@
 import { api } from "@/lib/api";
+import { auth } from "@/lib/auth";
 import { CATEGORIES, CONDITIONS, ProductCondition } from "@/lib/types";
 import { generateEditCode, storeEditCode } from "@/lib/utils";
 import { Ionicons } from "@expo/vector-icons";
@@ -16,6 +17,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function PostScreen() {
   const router = useRouter();
@@ -105,6 +107,21 @@ export default function PostScreen() {
     setLoading(true);
 
     try {
+      // Check if user is already authenticated
+      const isAlreadyAuth = await auth.isAuthenticated();
+      if (!isAlreadyAuth) {
+        // Authenticate user with phone number (creates account if needed)
+        const authSuccess = await auth.authenticateWithPhone(
+          sellerPhone.trim(),
+        );
+        if (!authSuccess) {
+          Alert.alert("Error", "Failed to authenticate. Please try again.");
+          return;
+        }
+      } else {
+        console.log("User already authenticated, skipping auth step");
+      }
+
       // Upload images
       const imageIds = await api.uploadImages(images);
 

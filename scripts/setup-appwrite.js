@@ -153,7 +153,16 @@ async function setupAppwrite() {
       "reported",
       false,
     );
-    console.log("  ✓ reported\n");
+    console.log("  ✓ reported");
+
+    await databases.createStringAttribute(
+      database.$id,
+      collection.$id,
+      "user_id",
+      255,
+      false,
+    );
+    console.log("  ✓ user_id\n");
 
     // Wait for attributes to be available
     console.log("⏳ Waiting for attributes to be ready...");
@@ -188,7 +197,16 @@ async function setupAppwrite() {
       ["$createdAt"],
       ["DESC"],
     );
-    console.log("  ✓ created_at index\n");
+    console.log("  ✓ created_at index");
+
+    await databases.createIndex(
+      database.$id,
+      collection.$id,
+      "user_idx",
+      "key",
+      ["user_id"],
+    );
+    console.log("  ✓ user_id index\n");
 
     // Create Storage Bucket
     console.log("🖼️  Creating storage bucket...");
